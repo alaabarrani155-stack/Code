@@ -140,9 +140,9 @@
         <div class="form-group">
             <label for="testType">Type de test</label>
             <select id="testType">
-                <option value="Unit">Test unitaire</option>
-                <option value="Integration">Test d'intégration</option>
-                <option value="Performance">Test de performance</option>
+                <option value="Unit">Unitaire</option>
+                <option value="Integration">Intégration</option>
+                <option value="Performance">Performance</option>
             </select>
         </div>
         
@@ -172,7 +172,6 @@
         function addTestResult() {
             const name = document.getElementById('testName').value.trim();
             const type = document.getElementById('testType').value;
-            const status = document.getElementById('testStatus').value;
             const duration = parseFloat(
                 document.getElementById('testDuration').value
             );
@@ -183,10 +182,11 @@
                 return;
             }
 
+            // Par défaut, on considère le test comme réussi (success)
             const test = {
                 name: name,
                 type: type,
-                status: status,
+                status: 'success',
                 duration: duration
             };
 
@@ -250,15 +250,7 @@
             tests.forEach((test, index) => {
                 const li = document.createElement('li');
 
-                let statusText = '';
-
-                if (test.status === 'success') {
-                    statusText = 'Réussi';
-                } else if (test.status === 'failure') {
-                    statusText = 'Échoué';
-                } else {
-                    statusText = 'En attente';
-                }
+                let statusText = 'Réussi';
 
                 li.innerText = 
                     `Test ${index + 1} : ${test.name} | ` +
