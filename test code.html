@@ -131,38 +131,49 @@
 <body>
     <div class="container">
         <h1>ThunderCode - Analyse des Résultats des Tests</h1>
-        
         <div class="form-group">
             <label for="testName">Nom du test</label>
             <input type="text" id="testName" placeholder="Ex : Test de connexion">
         </div>
-        
         <div class="form-group">
             <label for="testType">Type de test</label>
             <select id="testType">
-                <option value="Unit">Unitaire</option>
-                <option value="Integration">Intégration</option>
-                <option value="Performance">Performance</option>
+                <option value="Unitaire">Test unitaire</option>
+                <option value="Integration">Test d'intégration</option>
+                <option value="Fonctionnel">Test fonctionnel</option>
+                <option value="Performance">Test de performance</option>
             </select>
         </div>
-        
+        <div class="form-group">
+            <label for="testDuration">Nombre d'actions simulées</label>
+            <input type="number" id="testDuration" placeholder="Ex : 3000" min="0" step="1">
+        </div>
         <div class="form-group">
             <label for="testDuration">Temps d'exécution simulé (secondes)</label>
             <input type="number" id="testDuration" placeholder="Ex : 2.5" min="0" step="1">
         </div>
-        
-        <button onclick="addTestResult()">Lance le Test AI</button>
-        
+        <button onclick="addTestResult()"> Lance le Test AI </button>
         <div id="result" class="result-box success" style="display: block;">
-            <div id="resultTitle" style="font-weight: bold; font-size: 18px;">Analyse Terminée</div>
+            <div id="resultTitle" style="font-weight: bold; font-size: 18px;"> Analyse Terminée </div>
             <div class="score" id="successRate">100%</div>
             <div id="resultLevel" style="font-weight: 600;">Tous les tests sont réussis !</div>
             <div class="summary">
-                <span>Total: <strong id="totalTests">0</strong></span>
-                <span>Réussis: <strong id="passedTests">0</strong></span>
-                <span>Échoués: <strong id="failedTests">0</strong></span>
+                <div class="summary-item">
+                    <strong id="totalTests">1</strong>
+                    Total
+                </div>
+                <div class="summary-item">
+                    <strong id="passedTests">1</strong>
+                    Réussis
+                </div>
+                <div class="summary-item">
+                    <strong id="failedTests">0</strong>
+                    Échoués
+                </div>
             </div>
-            <ul class="details" id="testDetails"></ul>
+            <ul class="details" id="testDetails">
+                <li>Test 1 : hb | Type : Unitaire | Résultat : Réussi | Durée : 2.5 secondes</li>
+            </ul>
         </div>
     </div>
 
@@ -170,23 +181,24 @@
         let tests = [];
 
         function addTestResult() {
+
             const name = document.getElementById('testName').value.trim();
             const type = document.getElementById('testType').value;
+            const status = document.getElementById('testStatus').value;
             const duration = parseFloat(
                 document.getElementById('testDuration').value
             );
 
-            if (name === '' || document.getElementById('testDuration').value === '' 
+            if (name === '' || document.getElementById('testDuration').value === ''
                 || !Number.isFinite(duration) || duration < 0) {
                 alert('Veuillez saisir un nom et une durée valide.');
                 return;
             }
 
-            // Par défaut, on considère le test comme réussi (success)
             const test = {
                 name: name,
                 type: type,
-                status: 'success',
+                status: status,
                 duration: duration
             };
 
@@ -199,6 +211,7 @@
         }
 
         function displayResults() {
+
             const total = tests.length;
 
             const passed = tests.filter(
@@ -213,15 +226,15 @@
                 test => test.status === 'pending'
             ).length;
 
-            const successRate = total > 0 
-                ? Math.round((passed / total) * 100) 
+            const successRate = total > 0
+                ? Math.round((passed / total) * 100)
                 : 0;
 
             const resultDiv = document.getElementById('result');
 
             resultDiv.style.display = 'block';
 
-            document.getElementById('successRate').innerText = 
+            document.getElementById('successRate').innerText =
                 successRate + '%';
 
             document.getElementById('totalTests').innerText = total;
@@ -248,11 +261,20 @@
             details.innerHTML = '';
 
             tests.forEach((test, index) => {
+
                 const li = document.createElement('li');
 
-                let statusText = 'Réussi';
+                let statusText = '';
 
-                li.innerText = 
+                if (test.status === 'success') {
+                    statusText = 'Réussi';
+                } else if (test.status === 'failure') {
+                    statusText = 'Échoué';
+                } else {
+                    statusText = 'En attente';
+                }
+
+                li.innerText =
                     `Test ${index + 1} : ${test.name} | ` +
                     `Type : ${test.type} | ` +
                     `Résultat : ${statusText} | ` +
